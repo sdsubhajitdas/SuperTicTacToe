@@ -1,8 +1,13 @@
+import { useState } from "react";
 import logo from "../../assets/logo.png";
-import { Link } from "react-router-dom";
 import Button from "../../components/Button";
+import CreateRoomModal from "../../components/CreateRoomModal";
+import JoinRoomModal from "../../components/JoinRoomModal";
 
 function Home() {
+  const [createRoomIsClosed, setCreateRoomIsClosed] = useState(true);
+  const [joinRoomIsClosed, setJoinRoomIsClosed] = useState(true);
+
   return (
     <main className="flex flex-col items-center min-h-screen pt-12 sm:pt-24 bg-app-bg text-app-text">
       <span className="font-semibold text-center">
@@ -16,13 +21,19 @@ function Home() {
         alt="Game logo"
       />
       <div className="flex flex-col w-3/4 gap-2 mt-10 md:w-1/3 lg:w-1/2 lg:flex-row">
-        <Button>
-          <Link to="room?player=1">Create Room</Link>
+        <Button onClick={() => setCreateRoomIsClosed(false)}>
+          Create Room
         </Button>
-        <Button>
-          <Link to="room?player=2">Join Room</Link>
-        </Button>
+        <Button onClick={() => setJoinRoomIsClosed(false)}>Join Room</Button>
       </div>
+      <CreateRoomModal
+        isClosed={createRoomIsClosed}
+        onClose={setCreateRoomIsClosed}
+      />
+      <JoinRoomModal
+        isClosed={joinRoomIsClosed}
+        onClose={setJoinRoomIsClosed}
+      />
     </main>
   );
 }
