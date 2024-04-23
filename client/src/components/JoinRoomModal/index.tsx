@@ -1,11 +1,19 @@
 type JoinRoomModalProps = {
   isClosed: boolean;
   onClose: React.Dispatch<React.SetStateAction<boolean>>;
+  playerName: string;
+  setPlayerName: (arg0: string) => void;
+  roomId: string;
+  setRoomId: (arg0: string) => void;
 };
 
 export default function JoinRoomModal({
   isClosed,
   onClose,
+  playerName,
+  setPlayerName,
+  roomId,
+  setRoomId,
 }: JoinRoomModalProps) {
   return (
     <div className="fixed inset-0 z-10 overflow-y-auto" hidden={isClosed}>
@@ -31,6 +39,8 @@ export default function JoinRoomModal({
                 id="roomId"
                 type="text"
                 className="px-2 py-1 text-4xl text-center rounded"
+                value={roomId}
+                onChange={(e) => setRoomId(e.target.value)}
               />
             </div>
             <div className="flex flex-col sm:w-3/4">
@@ -42,7 +52,8 @@ export default function JoinRoomModal({
                 id="playerName"
                 type="text"
                 className="px-2 py-1 text-4xl text-center rounded"
-                value="Subhajit"
+                value={playerName}
+                onChange={(e) => setPlayerName(e.target.value)}
               />
             </div>
           </div>

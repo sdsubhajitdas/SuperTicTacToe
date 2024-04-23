@@ -1,11 +1,17 @@
 type CreateRoomModalProps = {
   isClosed: boolean;
   onClose: React.Dispatch<React.SetStateAction<boolean>>;
+  playerName: string;
+  setPlayerName: (arg0: string) => void;
+  roomId: string;
 };
 
 export default function CreateRoomModal({
   isClosed,
   onClose,
+  playerName,
+  setPlayerName,
+  roomId,
 }: CreateRoomModalProps) {
   return (
     <div className="fixed inset-0 z-10 overflow-y-auto" hidden={isClosed}>
@@ -31,8 +37,8 @@ export default function CreateRoomModal({
                 id="roomId"
                 type="text"
                 className="px-2 py-1 text-4xl text-center rounded"
-                value="12345"
                 disabled
+                value={roomId}
               />
             </div>
             <div className="flex flex-col sm:w-3/4">
@@ -44,7 +50,8 @@ export default function CreateRoomModal({
                 id="playerName"
                 type="text"
                 className="px-2 py-1 text-4xl text-center rounded"
-                value="Subhajit"
+                value={playerName}
+                onChange={(e) => setPlayerName(e.target.value)}
               />
             </div>
           </div>
