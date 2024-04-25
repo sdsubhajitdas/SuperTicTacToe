@@ -65,6 +65,12 @@ function Home() {
           })
         }
         roomId={state.room.value}
+        setRoomId={(roomId: string) =>
+          dispatch({
+            type: roomManagementActions.SET_ROOM_VALUE,
+            payload: roomId,
+          })
+        }
         roomIdError={state.room.error}
       />
       <JoinRoomModal

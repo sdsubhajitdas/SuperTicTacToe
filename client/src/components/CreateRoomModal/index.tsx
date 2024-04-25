@@ -1,3 +1,6 @@
+import axios from "axios";
+import { useEffect } from "react";
+
 type CreateRoomModalProps = {
   isClosed: boolean;
   onClose: React.Dispatch<React.SetStateAction<boolean>>;
@@ -6,6 +9,7 @@ type CreateRoomModalProps = {
   playerNameError: string;
   setPlayerNameError: (arg0: string) => void;
   roomId: string;
+  setRoomId: (arg0: string) => void;
   roomIdError: string;
 };
 
@@ -17,8 +21,23 @@ export default function CreateRoomModal({
   playerNameError,
   setPlayerNameError,
   roomId,
+  setRoomId,
   roomIdError,
 }: CreateRoomModalProps) {
+  useEffect(
+    function allocateRoomId() {
+      async function generateRoomId() {
+        const data = await axios.post("/api/room");
+        setRoomId(data.data.roomId);
+      }
+
+      if (!isClosed && !roomId) {
+        generateRoomId();
+      }
+    },
+    [isClosed, roomId, setRoomId]
+  );
+
   function onJoinRoom() {
     if (!playerName) {
       setPlayerNameError("Player name is required");
