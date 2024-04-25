@@ -1,5 +1,7 @@
+import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { useEffect } from "react";
+import Spinner from "../Spinner";
 
 type CreateRoomModalProps = {
   isClosed: boolean;
@@ -24,6 +26,14 @@ export default function CreateRoomModal({
   setRoomId,
   roomIdError,
 }: CreateRoomModalProps) {
+  const { mutate, isSuccess, isPending } = useMutation({
+    mutationFn: () => {
+      return axios.post(`/api/room/join/${roomId}`, {
+        playerName,
+      });
+    },
+  });
+
   useEffect(
     function allocateRoomId() {
       async function generateRoomId() {
@@ -41,7 +51,9 @@ export default function CreateRoomModal({
   function onJoinRoom() {
     if (!playerName) {
       setPlayerNameError("Player name is required");
+      return;
     }
+    mutate();
   }
 
   return (
@@ -99,10 +111,15 @@ export default function CreateRoomModal({
             </div>
           </div>
           <button
-            className="py-2 m-3 text-xl font-medium rounded shadow-xl bg-app-bg-light hover:bg-app-text hover:text-white hover:shadow-app-text/50 lg:text-2xl"
+            className="flex py-2 m-3 text-xl font-medium rounded shadow-xl bg-app-bg-light enabled:hover:bg-app-text enabled:hover:text-white enabled:hover:shadow-app-text/50 lg:text-2xl"
             onClick={onJoinRoom}
+            disabled={isPending || isSuccess}
           >
-            Join Room
+            {isPending ? (
+              <Spinner className="mx-auto" />
+            ) : (
+              <span className="mx-auto">Join Room</span>
+            )}
           </button>
         </div>
       </div>

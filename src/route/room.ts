@@ -23,7 +23,8 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
       players: [],
       board: [],
     }),
-    redisClient.expire(`room:${roomId}`, 3600),
+    // redisClient.expire(`room:${roomId}`, 3600),
+    redisClient.expire(`room:${roomId}`, 600)
   ]);
 
   res.send(await redisClient.json_get(`room:${roomId}`));
