@@ -1,3 +1,10 @@
+import { useContext } from "react";
+import { GameContext } from "../../context/GameContext";
+import { useMutation } from "@tanstack/react-query";
+import Spinner from "../Spinner";
+import axios from "axios";
+import { Navigate } from "react-router-dom";
+
 type JoinRoomModalProps = {
   isClosed: boolean;
   onClose: React.Dispatch<React.SetStateAction<boolean>>;
@@ -23,14 +30,35 @@ export default function JoinRoomModal({
   roomIdError,
   setRoomIdError,
 }: JoinRoomModalProps) {
+  const { setRoomId: setGameContextRoomId } = useContext(GameContext);
+
+  const { mutate, isSuccess, isPending } = useMutation({
+    mutationFn: () => {
+      return axios.post(`/api/room/join/${roomId}`, {
+        playerName,
+      });
+    },
+    onSuccess: (data) => {
+      setGameContextRoomId(data.data.roomId);
+    },
+  });
+
   function onJoinRoom() {
     if (!playerName) {
       setPlayerNameError("Player name is required");
+      return;
     }
     if (!roomId) {
       setRoomIdError("Room required");
+      return;
     }
+    mutate();
   }
+
+  if (isSuccess) {
+    return <Navigate to="/game" />;
+  }
+
   return (
     <div className="fixed inset-0 z-10 overflow-y-auto" hidden={isClosed}>
       <div className="flex items-center justify-center min-h-screen p-2">
@@ -86,10 +114,15 @@ export default function JoinRoomModal({
             </div>
           </div>
           <button
-            className="py-2 m-3 text-xl font-medium rounded shadow-xl bg-app-bg-light hover:bg-app-text hover:text-white hover:shadow-app-text/50 lg:text-2xl"
+            className="flex py-2 m-3 text-xl font-medium rounded shadow-xl bg-app-bg-light enabled:hover:bg-app-text enabled:hover:text-white enabled:hover:shadow-app-text/50 lg:text-2xl"
             onClick={onJoinRoom}
+            disabled={isPending || isSuccess}
           >
-            Join Room
+            {isPending ? (
+              <Spinner className="mx-auto" />
+            ) : (
+              <span className="mx-auto">Join Room</span>
+            )}
           </button>
         </div>
       </div>
