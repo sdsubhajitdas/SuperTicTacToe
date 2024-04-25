@@ -3,7 +3,10 @@ type CreateRoomModalProps = {
   onClose: React.Dispatch<React.SetStateAction<boolean>>;
   playerName: string;
   setPlayerName: (arg0: string) => void;
+  playerNameError: string;
+  setPlayerNameError: (arg0: string) => void;
   roomId: string;
+  roomIdError: string;
 };
 
 export default function CreateRoomModal({
@@ -11,8 +14,17 @@ export default function CreateRoomModal({
   onClose,
   playerName,
   setPlayerName,
+  playerNameError,
+  setPlayerNameError,
   roomId,
+  roomIdError,
 }: CreateRoomModalProps) {
+  function onJoinRoom() {
+    if (!playerName) {
+      setPlayerNameError("Player name is required");
+    }
+  }
+
   return (
     <div className="fixed inset-0 z-10 overflow-y-auto" hidden={isClosed}>
       <div className="flex items-center justify-center min-h-screen p-2">
@@ -40,6 +52,12 @@ export default function CreateRoomModal({
                 disabled
                 value={roomId}
               />
+              <span
+                className="mt-1 text-center text-red-700"
+                hidden={roomIdError == ""}
+              >
+                {roomIdError}
+              </span>
             </div>
             <div className="flex flex-col sm:w-3/4">
               <label htmlFor="playerName" className="pl-1">
@@ -53,9 +71,18 @@ export default function CreateRoomModal({
                 value={playerName}
                 onChange={(e) => setPlayerName(e.target.value)}
               />
+              <span
+                className="mt-1 text-center text-red-700"
+                hidden={playerNameError == ""}
+              >
+                {playerNameError}
+              </span>
             </div>
           </div>
-          <button className="py-2 m-3 text-xl font-medium rounded shadow-xl bg-app-bg-light hover:bg-app-text hover:text-white hover:shadow-app-text/50 lg:text-2xl">
+          <button
+            className="py-2 m-3 text-xl font-medium rounded shadow-xl bg-app-bg-light hover:bg-app-text hover:text-white hover:shadow-app-text/50 lg:text-2xl"
+            onClick={onJoinRoom}
+          >
             Join Room
           </button>
         </div>

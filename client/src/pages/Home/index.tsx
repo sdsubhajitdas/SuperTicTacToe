@@ -12,6 +12,23 @@ function Home() {
   const [joinRoomIsClosed, setJoinRoomIsClosed] = useState(true);
   const [state, dispatch] = useRoomManagement();
 
+  function onCloseModal() {
+    dispatch({
+      type: roomManagementActions.SET_PLAYER_1_ERROR,
+      payload: "",
+    });
+    dispatch({
+      type: roomManagementActions.SET_PLAYER_2_ERROR,
+      payload: "",
+    });
+    dispatch({
+      type: roomManagementActions.SET_ROOM_ERROR,
+      payload: "",
+    });
+    setCreateRoomIsClosed(true);
+    setJoinRoomIsClosed(true);
+  }
+
   return (
     <main className="flex flex-col items-center min-h-screen pt-12 sm:pt-24 bg-app-bg text-app-text">
       <span className="font-semibold text-center">
@@ -32,7 +49,7 @@ function Home() {
       </div>
       <CreateRoomModal
         isClosed={createRoomIsClosed}
-        onClose={setCreateRoomIsClosed}
+        onClose={onCloseModal}
         playerName={state.player1.value}
         setPlayerName={(playerName: string) =>
           dispatch({
@@ -40,11 +57,19 @@ function Home() {
             payload: playerName,
           })
         }
+        playerNameError={state.player1.error}
+        setPlayerNameError={(error: string) =>
+          dispatch({
+            type: roomManagementActions.SET_PLAYER_1_ERROR,
+            payload: error,
+          })
+        }
         roomId={state.room.value}
+        roomIdError={state.room.error}
       />
       <JoinRoomModal
         isClosed={joinRoomIsClosed}
-        onClose={setJoinRoomIsClosed}
+        onClose={onCloseModal}
         playerName={state.player2.value}
         setPlayerName={(playerName: string) =>
           dispatch({
@@ -52,11 +77,25 @@ function Home() {
             payload: playerName,
           })
         }
+        playerNameError={state.player2.error}
+        setPlayerNameError={(error: string) =>
+          dispatch({
+            type: roomManagementActions.SET_PLAYER_2_ERROR,
+            payload: error,
+          })
+        }
         roomId={state.room.value}
         setRoomId={(roomId: string) =>
           dispatch({
             type: roomManagementActions.SET_ROOM_VALUE,
             payload: roomId,
+          })
+        }
+        roomIdError={state.room.error}
+        setRoomIdError={(error: string) =>
+          dispatch({
+            type: roomManagementActions.SET_ROOM_ERROR,
+            payload: error,
           })
         }
       />

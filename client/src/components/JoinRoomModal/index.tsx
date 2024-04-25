@@ -3,8 +3,12 @@ type JoinRoomModalProps = {
   onClose: React.Dispatch<React.SetStateAction<boolean>>;
   playerName: string;
   setPlayerName: (arg0: string) => void;
+  playerNameError: string;
+  setPlayerNameError: (arg0: string) => void;
   roomId: string;
   setRoomId: (arg0: string) => void;
+  roomIdError: string;
+  setRoomIdError: (arg0: string) => void;
 };
 
 export default function JoinRoomModal({
@@ -12,9 +16,21 @@ export default function JoinRoomModal({
   onClose,
   playerName,
   setPlayerName,
+  playerNameError,
+  setPlayerNameError,
   roomId,
   setRoomId,
+  roomIdError,
+  setRoomIdError,
 }: JoinRoomModalProps) {
+  function onJoinRoom() {
+    if (!playerName) {
+      setPlayerNameError("Player name is required");
+    }
+    if (!roomId) {
+      setRoomIdError("Room required");
+    }
+  }
   return (
     <div className="fixed inset-0 z-10 overflow-y-auto" hidden={isClosed}>
       <div className="flex items-center justify-center min-h-screen p-2">
@@ -42,6 +58,12 @@ export default function JoinRoomModal({
                 value={roomId}
                 onChange={(e) => setRoomId(e.target.value)}
               />
+              <span
+                className="mt-1 text-center text-red-700"
+                hidden={roomIdError == ""}
+              >
+                {roomIdError}
+              </span>
             </div>
             <div className="flex flex-col sm:w-3/4">
               <label htmlFor="playerName" className="pl-1">
@@ -55,9 +77,18 @@ export default function JoinRoomModal({
                 value={playerName}
                 onChange={(e) => setPlayerName(e.target.value)}
               />
+              <span
+                className="mt-1 text-center text-red-700"
+                hidden={playerNameError == ""}
+              >
+                {playerNameError}
+              </span>
             </div>
           </div>
-          <button className="py-2 m-3 text-xl font-medium rounded shadow-xl bg-app-bg-light hover:bg-app-text hover:text-white hover:shadow-app-text/50 lg:text-2xl">
+          <button
+            className="py-2 m-3 text-xl font-medium rounded shadow-xl bg-app-bg-light hover:bg-app-text hover:text-white hover:shadow-app-text/50 lg:text-2xl"
+            onClick={onJoinRoom}
+          >
             Join Room
           </button>
         </div>
