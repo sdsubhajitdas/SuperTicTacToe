@@ -1,7 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import Spinner from "../Spinner";
+import { GameContext } from "../../context/GameContext";
+import { Navigate } from "react-router-dom";
 
 type CreateRoomModalProps = {
   isClosed: boolean;
@@ -26,11 +28,16 @@ export default function CreateRoomModal({
   setRoomId,
   roomIdError,
 }: CreateRoomModalProps) {
+  const { setRoomId: setGameContextRoomId } = useContext(GameContext);
+
   const { mutate, isSuccess, isPending } = useMutation({
     mutationFn: () => {
       return axios.post(`/api/room/join/${roomId}`, {
         playerName,
       });
+    },
+    onSuccess: (data) => {
+      setGameContextRoomId(data.data.roomId);
     },
   });
 
@@ -54,6 +61,10 @@ export default function CreateRoomModal({
       return;
     }
     mutate();
+  }
+
+  if (isSuccess) {
+    return <Navigate to="/game" />;
   }
 
   return (
