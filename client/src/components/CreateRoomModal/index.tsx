@@ -84,7 +84,7 @@ export default function CreateRoomModal({
           <div className="flex flex-col gap-2 px-3 py-1 mt-3 sm:flex-row">
             <div className="flex flex-col sm:w-1/4">
               <label htmlFor="roomId" className="pl-1">
-                Room Number
+                Room
               </label>
               <input
                 name="roomId"

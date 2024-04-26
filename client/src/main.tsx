@@ -3,7 +3,6 @@ import Game from "./pages/Game/index.js";
 import GameContextProvider from "./context/GameContext/index.js";
 import Home from "./pages/Home/index.js";
 import ReactDOM from "react-dom/client";
-import Room from "./pages/Room/index.js";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
@@ -11,10 +10,6 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <Home />,
-  },
-  {
-    path: "/room",
-    element: <Room />,
   },
   {
     path: "/game",
