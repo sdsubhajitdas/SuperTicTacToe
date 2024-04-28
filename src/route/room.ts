@@ -21,7 +21,8 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
       roomId: roomId,
       status: "allocated",
       players: [],
-      board: [],
+      boards: Array(9).fill(Array(9).fill(null)),
+      masterBoard: Array(9).fill(null)
     }),
     // redisClient.expire(`room:${roomId}`, 3600),
     redisClient.expire(`room:${roomId}`, 600)

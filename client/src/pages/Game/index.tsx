@@ -1,10 +1,42 @@
-import { useContext } from "react";
-import { GameContext } from "../../context/GameContext/index.js";
+import io from "socket.io-client";
 import { Navigate } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
 import MasterBoard from "../../components/MasterBoard/index.js";
+import { GameContext } from "../../context/GameContext/index.js";
+import * as _ from "lodash";
+import { Socket } from "socket.io";
 
 function Game() {
   const { roomId } = useContext(GameContext);
+  const [roomData, setRoomData] = useState({});
+  const [socket, setSocket] = useState(undefined as unknown as Socket);
+
+  useEffect(() => {
+    if (roomId) {
+      const newSocket = io();
+      setSocket(newSocket);
+      newSocket.emit("join-room", roomId);
+
+      newSocket.on("joined-room", (response) => {
+        setRoomData(response);
+      });
+
+      // Cleanup function to close the socket connection when component unmounts
+      return () => {
+        newSocket.disconnect();
+      };
+    }
+  }, []);
+
+  const sendMoveInfo = (masterBoardIndex: number, childBoardIndex: number) => {
+    if (socket) {
+      socket.emit("player-made-move", {
+        masterBoardIndex,
+        childBoardIndex,
+        roomId,
+      });
+    }
+  };
 
   if (!roomId) {
     return <Navigate to="/" replace />;
@@ -23,23 +55,44 @@ function Game() {
           <p className="py-1 rounded shadow-2xl bg-app-board-background">
             Player X
             <span className="block pt-2 pb-1 mx-2 text-lg rounded sm:text-2xl bg-app-bg">
-              Subhajit
+              {_.get(roomData, "players[0].name", " ")}
             </span>
           </p>
           <p className="py-2 rounded shadow-2xl bg-app-board-background">
             Player O
             <span className="block pt-2 pb-1 mx-2 text-lg rounded sm:text-2xl bg-app-bg">
-              Jeetu
+              {_.get(roomData, "players[1].name", " ")}
             </span>
           </p>
         </div>
       </div>
 
       <p className="px-2 text-lg font-medium sm:text-2xl sm:px-0">
-        Waiting for other players to join ...
+        {_.get(roomData, "status", "waiting") == "waiting" &&
+          "Waiting for other players to join ..."}
       </p>
 
-      <MasterBoard />
+      <MasterBoard
+        masterBoardData={_.get(roomData, "masterBoard", Array(9).fill(null))}
+        // masterBoardData={_.get(roomData, "masterBoard", [
+        //   null,
+        //   null,
+        //   null,
+        //   null,
+        //   "O",
+        //   "X",
+        //   null,
+        //   null,
+        //   null,
+        // ])}
+        childBoardData={_.get(
+          roomData,
+          "boards",
+          Array(9).fill(Array(9).fill(null))
+        )}
+        disable={_.get(roomData, "status", "waiting") == "waiting"}
+        sendMoveInfo={sendMoveInfo}
+      />
     </main>
   );
 }

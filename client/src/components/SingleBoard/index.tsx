@@ -1,13 +1,22 @@
 import BoardButton from "../BoardButton/index.js";
 
 type SingleBoardProps = {
-  index: number;
-  disabled?: boolean;
+  masterBoardIndex: number;
+  boardData: Array<"X" | "O" | null>;
+  masterData: "X" | "O" | null;
+  disable: boolean;
+  sendMoveInfo: (masterBoardIndex: number, childBoardIndex: number) => void;
 };
 
-function SingleBoard({ index, disabled = false }: SingleBoardProps) {
-  const row = Math.floor(index / 3);
-  const col = index % 3;
+function SingleBoard({
+  masterBoardIndex,
+  boardData,
+  masterData,
+  disable = false,
+  sendMoveInfo,
+}: SingleBoardProps) {
+  const row = Math.floor(masterBoardIndex / 3);
+  const col = masterBoardIndex % 3;
 
   let borderClassName: string = "";
   if ((row == 0 || row == 1) && (col == 0 || col == 1)) {
@@ -18,7 +27,7 @@ function SingleBoard({ index, disabled = false }: SingleBoardProps) {
     borderClassName = "border-r-4 sm:border-r-8";
   }
 
-  if (disabled) {
+  if (masterData) {
     let roundedClassName: string = "";
 
     if (row == 0 && col == 0) {
@@ -36,7 +45,7 @@ function SingleBoard({ index, disabled = false }: SingleBoardProps) {
         className={`h-full w-full flex items-center justify-center  ${borderClassName} ${roundedClassName} bg-app-bg`}
       >
         <span className="text-5xl font-medium cursor-default sm:text-9xl">
-          {Math.random() > 0.5 ? "X" : "O"}
+          {masterData}
         </span>
       </div>
     );
@@ -49,8 +58,11 @@ function SingleBoard({ index, disabled = false }: SingleBoardProps) {
       {[...Array(9).keys()].map((i) => (
         <BoardButton
           key={i}
-          index={i}
-          disabled={Math.random() > 0.5 ? true : false}
+          childBoardIndex={i}
+          masterBoardIndex={masterBoardIndex}
+          disable={boardData[i] ? true : false || disable}
+          value={boardData[i]}
+          sendMoveInfo={sendMoveInfo}
         />
       ))}
     </div>

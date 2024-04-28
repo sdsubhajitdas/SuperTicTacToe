@@ -1,15 +1,20 @@
-import { useState } from "react";
-
 type BoardButtonProps = {
-  index: number;
-  disabled?: boolean;
+  childBoardIndex: number;
+  masterBoardIndex: number;
+  disable?: boolean;
+  value: "X" | "O" | null;
+  sendMoveInfo: (masterBoardIndex: number, childBoardIndex: number) => void;
 };
 
-function BoardButton({ index, disabled = false }: BoardButtonProps) {
-  const [value] = useState(Math.random() > 0.5 ? "X" : "O");
-
-  const row = Math.floor(index / 3);
-  const col = index % 3;
+function BoardButton({
+  childBoardIndex,
+  masterBoardIndex,
+  disable = false,
+  value,
+  sendMoveInfo,
+}: BoardButtonProps) {
+  const row = Math.floor(childBoardIndex / 3);
+  const col = childBoardIndex % 3;
 
   let borderClassNames: string = "";
   if ((row == 0 || row == 1) && (col == 0 || col == 1)) {
@@ -24,9 +29,10 @@ function BoardButton({ index, disabled = false }: BoardButtonProps) {
   return (
     <button
       className={`w-9 h-9 sm:w-16 sm:h-16 lg:w-20 lg:h-20 text-center text-xl sm:text-3xl lg:text-5xl border-white ${borderClassNames} disabled:bg-app-bg hover:bg-app-bg-light`}
-      disabled={disabled}
+      disabled={disable}
+      onClick={() => sendMoveInfo(masterBoardIndex, childBoardIndex)}
     >
-      {disabled ? value : ""}
+      {value}
     </button>
   );
 }
