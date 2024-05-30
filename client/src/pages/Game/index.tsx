@@ -5,6 +5,7 @@ import MasterBoard from "../../components/MasterBoard/index.js";
 import { GameContext } from "../../context/GameContext/index.js";
 import * as _ from "lodash";
 import { Socket } from "socket.io";
+import shareLogo from "../../assets/share.svg";
 
 function Game() {
   const { roomId } = useContext(GameContext);
@@ -45,12 +46,18 @@ function Game() {
   return (
     <main className="flex flex-col items-center min-h-screen gap-5 py-3 sm:py-6 bg-app-bg text-app-text">
       <div className="flex flex-col items-center w-full gap-1 px-2 sm:px-0 sm:w-1/2 md:w-2/3 ">
-        <p className="w-full py-1 text-center rounded shadow-2xl bg-app-board-background">
-          Room
-          <span className="block py-1 mx-2 text-2xl rounded bg-app-bg">
-            {roomId}
-          </span>
-        </p>
+        <div className="w-full py-2 text-center rounded shadow-2xl bg-app-board-background">
+          <span className="block mb-0.5">Room</span>
+          <div className="flex items-center justify-between px-4 py-1 mx-2 text-2xl rounded bg-app-bg">
+            <span className="flex-grow pl-10 text-center">{roomId}</span>
+            <button
+              className="px-1 py-1 mr-0 rounded sm:mr-1 hover:bg-app-board-background"
+              title="Share"
+            >
+              <img src={shareLogo} className="w-6 h-6" alt="Share" />
+            </button>
+          </div>
+        </div>
         <div className="grid w-full grid-cols-2 grid-rows-1 gap-4 text-xl font-medium text-center sm:text-3xl">
           <p className="py-1 rounded shadow-2xl bg-app-board-background">
             Player X
@@ -74,17 +81,6 @@ function Game() {
 
       <MasterBoard
         masterBoardData={_.get(roomData, "masterBoard", Array(9).fill(null))}
-        // masterBoardData={_.get(roomData, "masterBoard", [
-        //   null,
-        //   null,
-        //   null,
-        //   null,
-        //   "O",
-        //   "X",
-        //   null,
-        //   null,
-        //   null,
-        // ])}
         childBoardData={_.get(
           roomData,
           "boards",
