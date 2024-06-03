@@ -28,7 +28,7 @@ function BoardButton({
 
   return (
     <button
-      className={`w-9 h-9 sm:w-16 sm:h-16 lg:w-20 lg:h-20 text-center text-xl sm:text-3xl lg:text-5xl border-white ${borderClassNames} disabled:bg-app-bg hover:bg-app-bg-light`}
+      className={`aspect-square text-center text-xl sm:text-3xl lg:text-5xl border-white ${borderClassNames} disabled:bg-app-bg hover:bg-app-bg-light`}
       disabled={disable}
       onClick={() => sendMoveInfo(masterBoardIndex, childBoardIndex)}
     >
