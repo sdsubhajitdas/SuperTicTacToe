@@ -6,11 +6,14 @@ import { GameContext } from "../../context/GameContext/index.js";
 import * as _ from "lodash";
 import { Socket } from "socket.io";
 import shareLogo from "../../assets/share.svg";
+import Cookies from "js-cookie";
 
 function Game() {
   const { roomId } = useContext(GameContext);
   const [roomData, setRoomData] = useState({});
   const [socket, setSocket] = useState(undefined as unknown as Socket);
+  const [allowedToMakeMove, setAllowedToMakeMove] = useState(false);
+  const sessionId = Cookies.get("sessionId");
 
   useEffect(() => {
     if (roomId) {
@@ -20,9 +23,11 @@ function Game() {
 
       newSocket.on("join-room-completed", (response) => {
         setRoomData(response);
+        setAllowedToMakeMove(_.get(response, "nextMovePlayer") === sessionId);
       });
 
       newSocket.on("player-made-move-completed", (response) => {
+        setAllowedToMakeMove(_.get(response, "nextMovePlayer") === sessionId);
         setRoomData(response);
       });
 
@@ -90,8 +95,12 @@ function Game() {
           "boards",
           Array(9).fill(Array(9).fill(null))
         )}
-        disable={_.get(roomData, "status", "waiting") == "waiting"}
+        disable={
+          _.get(roomData, "status", "waiting") === "waiting" ||
+          !allowedToMakeMove
+        }
         sendMoveInfo={sendMoveInfo}
+        allowedBoardToPlay={_.get(roomData, "nextMoveBoard", null)}
       />
     </main>
   );

@@ -25,6 +25,7 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
       boards: Array(9).fill(Array(9).fill(null)),
       masterBoard: Array(9).fill(null),
       nextMovePlayer: null,
+      nextMoveBoard: null
     }),
     // redisClient.expire(`room:${roomId}`, 3600),
     redisClient.expire(`room:${roomId}`, 600),

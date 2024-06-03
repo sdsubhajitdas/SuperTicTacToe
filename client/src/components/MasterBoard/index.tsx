@@ -5,6 +5,7 @@ type MasterBoardProps = {
   childBoardData: Array<Array<"X" | "O" | null>>;
   disable: boolean;
   sendMoveInfo: (masterBoardIndex: number, childBoardIndex: number) => void;
+  allowedBoardToPlay: null | number;
 };
 
 export default function MasterBoard({
@@ -12,6 +13,7 @@ export default function MasterBoard({
   childBoardData,
   disable = false,
   sendMoveInfo,
+  allowedBoardToPlay,
 }: MasterBoardProps) {
   return (
     <div className="relative grid grid-cols-3 grid-rows-3 p-1.5 md:p-2 lg:p-5 rounded-lg shadow-2xl bg-app-board-background aspect-square 2xl:w-1/3 xl:w-3/5 lg:w-1/2 md:w-2/3 w-11/12">
@@ -21,7 +23,9 @@ export default function MasterBoard({
           masterBoardIndex={i}
           boardData={childBoardData[i]}
           masterData={masterBoardData[i]}
-          disable={disable}
+          disable={
+            disable || (allowedBoardToPlay !== null && allowedBoardToPlay !== i)
+          }
           sendMoveInfo={sendMoveInfo}
         />
       ))}

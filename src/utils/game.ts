@@ -1,3 +1,5 @@
+import * as _ from "lodash";
+
 export function checkTicTacToeBoard(board: ("X" | "O" | null)[]) {
   const winningCombinations = [
     [0, 1, 2], // Top row
@@ -25,4 +27,19 @@ export function checkTicTacToeBoard(board: ("X" | "O" | null)[]) {
 
   // If no winner and no null values, it's a draw
   return "?";
+}
+
+export function decideNextMovePlayer(
+  lastMovePlayer: string,
+  players: { sessionId: string | null; name: string }[]
+) {
+  if (!lastMovePlayer) {
+    return players[0].sessionId;
+  }
+  const lastMovePlayerIndex = _.findIndex(players, player => player.sessionId === lastMovePlayer)
+  return lastMovePlayerIndex === 0 ? players[1].sessionId : players[0].sessionId;
+}
+
+export function decideNextMoveBoard(masterBoardIndex: number, childBoardIndex: number) {
+  return childBoardIndex;
 }

@@ -2,7 +2,7 @@ import { Server } from "socket.io";
 import redisClient from "../redis";
 import * as _ from "lodash";
 import { decideMoveBasedOnSessionId } from "../utils/session";
-import { checkTicTacToeBoard } from "../utils/game";
+import { checkTicTacToeBoard, decideNextMoveBoard, decideNextMovePlayer } from "../utils/game";
 
 export default function setupSocketIoServer(ioServer: Server) {
   ioServer.on("connection", (socket) => {
@@ -37,7 +37,7 @@ export default function setupSocketIoServer(ioServer: Server) {
       const { masterBoardIndex, childBoardIndex, roomId } = moveDetails;
       const roomBoard = await redisClient.json_get(`room:${roomId}`);
       let boards = _.get(roomBoard, "boards");
-      let masterBoard = _.get(roomBoard, "masterBoard", Array(9).fill(null))
+      let masterBoard = _.get(roomBoard, "masterBoard", Array(9).fill(null));
       let players = _.get(roomBoard, "players", []);
       if (boards) {
         _.set(
@@ -48,14 +48,27 @@ export default function setupSocketIoServer(ioServer: Server) {
 
         const value = checkTicTacToeBoard(
           _.get(boards, `[${masterBoardIndex}]`, Array(9).fill(null))
-        )
+        );
 
         // console.log(value);
-        _.set(masterBoard, `[${masterBoardIndex}]`, value)
+        _.set(masterBoard, `[${masterBoardIndex}]`, value);
       }
 
-      await redisClient.json_set(`room:${roomId}`, "$.boards", boards);
-      await redisClient.json_set(`room:${roomId}`, "$.masterBoard", masterBoard);
+      await Promise.all([
+        redisClient.json_set(`room:${roomId}`, "$.boards", boards),
+        redisClient.json_set(`room:${roomId}`, "$.masterBoard", masterBoard),
+        redisClient.json_set(
+          `room:${roomId}`,
+          "$.nextMovePlayer",
+          decideNextMovePlayer(
+            _.get(roomBoard, "nextMovePlayer", ""),
+            players
+          )
+        ),
+        redisClient.json_set(`room:${roomId}`,
+          "$.nextMoveBoard", decideNextMoveBoard(masterBoardIndex, childBoardIndex))
+      ]);
+
       ioServer
         .to(roomId)
         .emit(
