@@ -3,12 +3,13 @@ import createHttpError from "http-errors";
 import { generateRoomNumber } from "../utils/room";
 import redisClient from "../redis";
 import addSessionCookie from "../middleware/sessionCookie";
+import * as _ from "lodash";
 
 const router = Router();
 
 // Create a new room
 router.post("/", async (req: Request, res: Response, next: NextFunction) => {
-  let roomId = generateRoomNumber();
+  let roomId = generateRoomNumber(2);
   let roomExists = await redisClient.exists(`room:${roomId}`);
 
   while (roomExists) {
@@ -22,10 +23,11 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
       status: "allocated",
       players: [],
       boards: Array(9).fill(Array(9).fill(null)),
-      masterBoard: Array(9).fill(null)
+      masterBoard: Array(9).fill(null),
+      nextMovePlayer: null,
     }),
     // redisClient.expire(`room:${roomId}`, 3600),
-    redisClient.expire(`room:${roomId}`, 600)
+    redisClient.expire(`room:${roomId}`, 600),
   ]);
 
   res.send(await redisClient.json_get(`room:${roomId}`));
@@ -49,11 +51,14 @@ router.post(
       return next(createHttpError(404, `Room ${roomId} doesn't exist`));
     }
 
-    const playersInRoom = await redisClient.json_arrlen(
+    const playersInRoomLength = await redisClient.json_arrlen(
       `room:${roomId}`,
       "$.players"
     );
-    if (Array.isArray(playersInRoom) && playersInRoom[0] >= 2) {
+
+    const roomDetails = await redisClient.json_get(`room:${roomId}`);
+
+    if (Array.isArray(playersInRoomLength) && playersInRoomLength[0] >= 2) {
       return next(createHttpError(400, "Room not empty"));
     }
 
@@ -62,9 +67,16 @@ router.post(
         name: playerName,
         sessionId,
       }),
-      Array.isArray(playersInRoom) && playersInRoom[0] == 1
+      Array.isArray(playersInRoomLength) && playersInRoomLength[0] == 1
         ? redisClient.json_set(`room:${roomId}`, "$.status", "ready")
         : redisClient.json_set(`room:${roomId}`, "$.status", "waiting"),
+      Array.isArray(playersInRoomLength) && playersInRoomLength[0] == 1
+        ? redisClient.json_set(
+          `room:${roomId}`,
+          "$.nextMovePlayer",
+          _.get(roomDetails, "players[0].sessionId")
+        )
+        : redisClient.json_set(`room:${roomId}`, "$.nextMovePlayer", null),
     ]);
 
     res.send(await redisClient.json_get(`room:${roomId}`));
