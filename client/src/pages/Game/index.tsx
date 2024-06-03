@@ -16,9 +16,13 @@ function Game() {
     if (roomId) {
       const newSocket = io();
       setSocket(newSocket);
-      newSocket.emit("join-room", roomId);
+      newSocket.emit("join-room-initiated", roomId);
 
-      newSocket.on("joined-room", (response) => {
+      newSocket.on("join-room-completed", (response) => {
+        setRoomData(response);
+      });
+
+      newSocket.on("player-made-move-completed", (response) => {
         setRoomData(response);
       });
 
@@ -31,7 +35,7 @@ function Game() {
 
   const sendMoveInfo = (masterBoardIndex: number, childBoardIndex: number) => {
     if (socket) {
-      socket.emit("player-made-move", {
+      socket.emit("player-made-move-initiated", {
         masterBoardIndex,
         childBoardIndex,
         roomId,

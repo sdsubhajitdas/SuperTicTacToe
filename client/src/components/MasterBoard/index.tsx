@@ -14,7 +14,7 @@ export default function MasterBoard({
   sendMoveInfo,
 }: MasterBoardProps) {
   return (
-    <div className="grid grid-cols-3 grid-rows-3 p-1.5 md:p-2 lg:p-5 mx-1.5 rounded-lg shadow-2xl bg-app-board-background lg:mx-0">
+    <div className="relative grid grid-cols-3 grid-rows-3 p-1.5 md:p-2 lg:p-5 mx-1.5 rounded-lg shadow-2xl bg-app-board-background lg:mx-0">
       {[...Array(9).keys()].map((i) => (
         <SingleBoard
           key={i}
@@ -25,6 +25,10 @@ export default function MasterBoard({
           sendMoveInfo={sendMoveInfo}
         />
       ))}
+      <div
+        className="absolute top-0 bottom-0 left-0 right-0 bg-app-bg/40"
+        hidden={!disable}
+      ></div>
     </div>
   );
 }
