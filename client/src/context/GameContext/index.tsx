@@ -1,12 +1,32 @@
-import { createContext, useState } from "react";
+import {
+  createContext,
+  useState,
+  ReactNode,
+  Dispatch,
+  SetStateAction,
+} from "react";
 
-type GameContextProviderProps = {
-  children: React.ReactNode;
+// Define the type for the context value
+type GameContextType = {
+  roomId: string;
+  setRoomId: Dispatch<SetStateAction<string>>;
 };
 
-export const GameContext = createContext({});
+// Create a default value for the context
+const defaultContextValue: GameContextType = {
+  roomId: "",
+  setRoomId: () => {}, // Provide a no-op function as a default
+};
 
-function GameContextProvider({ children }: GameContextProviderProps) {
+type GameContextProviderProps = {
+  children: ReactNode;
+};
+
+export const GameContext = createContext<GameContextType>(defaultContextValue);
+
+export default function GameContextProvider({
+  children,
+}: GameContextProviderProps) {
   const [roomId, setRoomId] = useState("");
 
   return (
@@ -15,5 +35,3 @@ function GameContextProvider({ children }: GameContextProviderProps) {
     </GameContext.Provider>
   );
 }
-
-export default GameContextProvider;

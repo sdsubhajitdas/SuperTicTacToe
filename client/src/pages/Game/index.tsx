@@ -1,23 +1,25 @@
-import io from "socket.io-client";
+import io, { Socket } from "socket.io-client";
 import { Navigate } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import MasterBoard from "../../components/MasterBoard/index.js";
 import { GameContext } from "../../context/GameContext/index.js";
 import * as _ from "lodash";
-import { Socket } from "socket.io";
 import shareLogo from "../../assets/share.svg";
 import Cookies from "js-cookie";
+
+// Define a type alias for the socket
+type MySocket = Socket;
 
 function Game() {
   const { roomId } = useContext(GameContext);
   const [roomData, setRoomData] = useState({});
-  const [socket, setSocket] = useState(undefined as unknown as Socket);
+  const [socket, setSocket] = useState<MySocket | null>(null);
   const [allowedToMakeMove, setAllowedToMakeMove] = useState(false);
   const sessionId = Cookies.get("sessionId");
 
   useEffect(() => {
     if (roomId) {
-      const newSocket = io();
+      const newSocket: MySocket = io();
       setSocket(newSocket);
       newSocket.emit("join-room-initiated", roomId);
 
