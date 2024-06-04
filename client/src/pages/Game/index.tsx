@@ -86,6 +86,15 @@ function Game() {
       <p className="px-2 text-lg font-medium sm:text-2xl sm:px-0">
         {_.get(roomData, "status", "waiting") == "waiting" &&
           "Waiting for other players to join ..."}
+        {_.get(roomData, "status", "waiting") != "waiting" &&
+          `${_.get(
+            _.find(
+              _.get(roomData, "players", []),
+              (player) =>
+                _.get(player, "sessionId") === _.get(roomData, "nextMovePlayer")
+            ),
+            "name"
+          )}'s turn`}
       </p>
 
       <MasterBoard
