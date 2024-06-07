@@ -25,9 +25,11 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
       boards: Array(9).fill(Array(9).fill(null)),
       masterBoard: Array(9).fill(null),
       nextMovePlayer: null,
-      nextMoveBoard: null
+      nextMoveBoard: null,
     }),
-    redisClient.expire(`room:${roomId}`, 7200),
+    // On room creation we set the expiration to 10 mins.
+    // When someone joins the room we increase the expiration to 2 hours
+    redisClient.expire(`room:${roomId}`, 600),
   ]);
 
   res.send(await redisClient.json_get(`room:${roomId}`));
@@ -77,6 +79,7 @@ router.post(
           _.get(roomDetails, "players[0].sessionId")
         )
         : redisClient.json_set(`room:${roomId}`, "$.nextMovePlayer", null),
+      redisClient.expire(`room:${roomId}`, 7200),
     ]);
 
     res.send(await redisClient.json_get(`room:${roomId}`));
