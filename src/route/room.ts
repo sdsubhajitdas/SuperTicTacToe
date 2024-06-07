@@ -4,6 +4,9 @@ import { generateRoomNumber } from "../utils/room";
 import redisClient from "../redis";
 import addSessionCookie from "../middleware/sessionCookie";
 import * as _ from "lodash";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const router = Router();
 
@@ -79,7 +82,7 @@ router.post(
           _.get(roomDetails, "players[0].sessionId")
         )
         : redisClient.json_set(`room:${roomId}`, "$.nextMovePlayer", null),
-      redisClient.expire(`room:${roomId}`, 7200),
+      redisClient.expire(`room:${roomId}`, process.env.ROOM_EXPIRATION || 0),
     ]);
 
     res.send(await redisClient.json_get(`room:${roomId}`));
