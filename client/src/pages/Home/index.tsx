@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import logo from "../../assets/logo.png";
 import Button from "../../components/Button";
 import CreateRoomModal from "../../components/CreateRoomModal";
@@ -6,8 +6,11 @@ import JoinRoomModal from "../../components/JoinRoomModal";
 import useRoomManagement, {
   roomManagementActions,
 } from "../../hooks/useRoomManagement";
+import { useSearchParams } from "react-router-dom";
 
 function Home() {
+  const [searchParams] = useSearchParams();
+  const joinRoomId = searchParams.get("join");
   const [createRoomIsClosed, setCreateRoomIsClosed] = useState(true);
   const [joinRoomIsClosed, setJoinRoomIsClosed] = useState(true);
   const [state, dispatch] = useRoomManagement();
@@ -25,9 +28,24 @@ function Home() {
       type: roomManagementActions.SET_ROOM_ERROR,
       payload: "",
     });
+    dispatch({
+      type: roomManagementActions.SET_ROOM_VALUE,
+      payload: "",
+    });
     setCreateRoomIsClosed(true);
     setJoinRoomIsClosed(true);
   }
+
+  useEffect(() => {
+    if (joinRoomId) {
+      dispatch({
+        type: roomManagementActions.SET_ROOM_VALUE,
+        payload: joinRoomId,
+      });
+      setJoinRoomIsClosed(false);
+    }
+    console.log("Entered");
+  }, [dispatch, joinRoomId]);
 
   return (
     <main className="flex flex-col items-center min-h-screen pt-12 sm:pt-24 bg-app-bg text-app-text">

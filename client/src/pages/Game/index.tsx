@@ -4,8 +4,8 @@ import { useContext, useEffect, useState } from "react";
 import MasterBoard from "../../components/MasterBoard/index.js";
 import { GameContext } from "../../context/GameContext/index.js";
 import * as _ from "lodash";
-import shareLogo from "../../assets/share.svg";
 import Cookies from "js-cookie";
+import ShareButton from "../../components/ShareButton/index.js";
 
 // Define a type alias for the socket
 type MySocket = Socket;
@@ -61,12 +61,7 @@ function Game() {
           <span className="block mb-0.5">Room</span>
           <div className="flex items-center justify-between px-4 py-1 mx-2 text-2xl rounded bg-app-bg">
             <span className="flex-grow pl-10 text-center">{roomId}</span>
-            <button
-              className="px-1 py-1 mr-0 rounded sm:mr-1 hover:bg-app-board-background"
-              title="Share"
-            >
-              <img src={shareLogo} className="w-6 h-6" alt="Share" />
-            </button>
+            {_.get(roomData, "players", []).length < 2 && <ShareButton />}
           </div>
         </div>
         <div className="grid w-full grid-cols-2 grid-rows-1 gap-4 text-xl font-medium text-center sm:text-3xl">

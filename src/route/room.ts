@@ -9,7 +9,7 @@ const router = Router();
 
 // Create a new room
 router.post("/", async (req: Request, res: Response, next: NextFunction) => {
-  let roomId = generateRoomNumber(2);
+  let roomId = generateRoomNumber();
   let roomExists = await redisClient.exists(`room:${roomId}`);
 
   while (roomExists) {
@@ -27,8 +27,7 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
       nextMovePlayer: null,
       nextMoveBoard: null
     }),
-    // redisClient.expire(`room:${roomId}`, 3600),
-    redisClient.expire(`room:${roomId}`, 600),
+    redisClient.expire(`room:${roomId}`, 7200),
   ]);
 
   res.send(await redisClient.json_get(`room:${roomId}`));

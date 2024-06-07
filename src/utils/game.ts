@@ -40,6 +40,9 @@ export function decideNextMovePlayer(
   return lastMovePlayerIndex === 0 ? players[1].sessionId : players[0].sessionId;
 }
 
-export function decideNextMoveBoard(masterBoardIndex: number, childBoardIndex: number) {
-  return childBoardIndex;
+export function decideNextMoveBoard(childBoardIndex: number, masterBoard: ("X" | "Y" | "?" | null)[]) {
+  // If the next chosen board is full then play in all boards
+  if (masterBoard[childBoardIndex] !== null)
+    return childBoardIndex;
+  return null;
 }

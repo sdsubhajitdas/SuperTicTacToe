@@ -86,14 +86,18 @@ export default function CreateRoomModal({
               <label htmlFor="roomId" className="pl-1">
                 Room
               </label>
-              <input
-                name="roomId"
-                id="roomId"
-                type="text"
-                className="px-2 py-1 text-4xl text-center rounded"
-                disabled
-                value={roomId}
-              />
+              {!roomId && <Spinner className="mx-auto" />}
+              {roomId && (
+                <input
+                  name="roomId"
+                  id="roomId"
+                  type="text"
+                  className="px-2 py-1 text-4xl text-center rounded"
+                  disabled
+                  value={roomId}
+                />
+              )}
+
               <span
                 className="mt-1 text-center text-red-700"
                 hidden={roomIdError == ""}

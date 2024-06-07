@@ -66,7 +66,7 @@ export default function setupSocketIoServer(ioServer: Server) {
           )
         ),
         redisClient.json_set(`room:${roomId}`,
-          "$.nextMoveBoard", decideNextMoveBoard(masterBoardIndex, childBoardIndex))
+          "$.nextMoveBoard", decideNextMoveBoard(childBoardIndex, masterBoard))
       ]);
 
       ioServer
