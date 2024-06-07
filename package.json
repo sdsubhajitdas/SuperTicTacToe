@@ -8,7 +8,8 @@
     "dev-server": "nodemon src/index.ts",
     "build": "tsc && npm run build --prefix client && mkdir -p dist/client && cp -r client/dist dist/client",
     "start": "NODE_ENV=production node dist/index.js",
-    "deploy": "npm install && npm install --prefix client && npm run build"
+    "deploy": "npm install && npm install --prefix client && npm run build",
+    "update-prod": "git checkout production && git pull origin master && git push origin production && git checkout master"
   },
   "author": "Subhajit Das",
   "license": "ISC",
