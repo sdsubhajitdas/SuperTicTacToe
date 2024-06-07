@@ -31,7 +31,7 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
       nextMoveBoard: null,
     }),
     // On room creation we set the expiration to 10 mins.
-    // When someone joins the room we increase the expiration to 2 hours
+    // When someone joins the room we increase the expiration to env variable
     redisClient.expire(`room:${roomId}`, 600),
   ]);
 
@@ -56,34 +56,62 @@ router.post(
       return next(createHttpError(404, `Room ${roomId} doesn't exist`));
     }
 
-    const playersInRoomLength = await redisClient.json_arrlen(
+    const playersInRoomLength = (await redisClient.json_arrlen(
       `room:${roomId}`,
       "$.players"
-    );
+    )) as unknown as Array<number>;
 
     const roomDetails = await redisClient.json_get(`room:${roomId}`);
 
-    if (Array.isArray(playersInRoomLength) && playersInRoomLength[0] >= 2) {
+    const playerAlreadyInRoom = _.find(
+      _.get(roomDetails, "players", []),
+      (player) => _.get(player, "sessionId") === sessionId
+    );
+
+    if (
+      Array.isArray(playersInRoomLength) &&
+      playersInRoomLength[0] >= 2 &&
+      !playerAlreadyInRoom
+    ) {
       return next(createHttpError(400, "Room not empty"));
     }
 
-    await Promise.all([
-      redisClient.json_arrappend(`room:${roomId}`, "$.players", {
-        name: playerName,
-        sessionId,
-      }),
-      Array.isArray(playersInRoomLength) && playersInRoomLength[0] == 1
-        ? redisClient.json_set(`room:${roomId}`, "$.status", "ready")
-        : redisClient.json_set(`room:${roomId}`, "$.status", "waiting"),
-      Array.isArray(playersInRoomLength) && playersInRoomLength[0] == 1
-        ? redisClient.json_set(
+    let redisPromises = [];
+
+    if (!playerAlreadyInRoom) {
+      // Add new player to room
+      redisPromises.push(
+        redisClient.json_arrappend(`room:${roomId}`, "$.players", {
+          name: playerName,
+          sessionId,
+        })
+      );
+      // Set room status when new player joins
+      redisPromises.push(
+        redisClient.json_set(
           `room:${roomId}`,
-          "$.nextMovePlayer",
-          _.get(roomDetails, "players[0].sessionId")
+          "$.status",
+          playersInRoomLength[0] >= 1 ? "ready" : "waiting"
         )
-        : redisClient.json_set(`room:${roomId}`, "$.nextMovePlayer", null),
-      redisClient.expire(`room:${roomId}`, process.env.ROOM_EXPIRATION || 0),
-    ]);
+      );
+
+      if (playersInRoomLength[0] == 1) {
+        // Set nextMovePlayer when second player joins
+        redisPromises.push(
+          redisClient.json_set(
+            `room:${roomId}`,
+            "$.nextMovePlayer",
+            _.get(roomDetails, "players[0].sessionId")
+          )
+        );
+        // Set room expiration only when second player joins
+        redisPromises.push(
+          redisClient.expire(`room:${roomId}`, process.env.ROOM_EXPIRATION || 0)
+        );
+      }
+    }
+
+    await Promise.all(redisPromises);
 
     res.send(await redisClient.json_get(`room:${roomId}`));
   }

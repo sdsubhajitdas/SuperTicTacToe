@@ -42,7 +42,7 @@ export function decideNextMovePlayer(
 
 export function decideNextMoveBoard(childBoardIndex: number, masterBoard: ("X" | "Y" | "?" | null)[]) {
   // If the next chosen board is full then play in all boards
-  if (masterBoard[childBoardIndex] !== null)
+  if (masterBoard[childBoardIndex] === null)
     return childBoardIndex;
   return null;
 }
