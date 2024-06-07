@@ -16,7 +16,7 @@ function ShareButton() {
   return (
     <button
       className="px-1 py-1 mr-0 rounded sm:mr-1 hover:bg-app-board-background"
-      onClick={() => copyToClipBoard(`${window.location.host}?join=${roomId}`)}
+      onClick={() => copyToClipBoard(`${window.location.host}/?join=${roomId}`)}
       title="Share"
     >
       <img src={shareLogo} className="w-6 h-6" alt="Share" />
