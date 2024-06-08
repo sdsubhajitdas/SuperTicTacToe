@@ -1,4 +1,4 @@
-import SingleBoard from "../../components/SingleBoard/index.js";
+import SingleBoard from "../../components/SingleBoard";
 
 type MasterBoardProps = {
   masterBoardData: Array<"X" | "O" | null>;

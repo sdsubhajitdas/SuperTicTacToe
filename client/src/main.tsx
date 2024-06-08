@@ -1,7 +1,7 @@
 import "./index.css";
-import Game from "./pages/Game/index.js";
-import GameContextProvider from "./context/GameContext/index.js";
-import Home from "./pages/Home/index.js";
+import Game from "./pages/Game";
+import GameContextProvider from "./context/GameContext";
+import Home from "./pages/Home";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";

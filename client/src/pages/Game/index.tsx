@@ -1,12 +1,13 @@
 import io, { Socket } from "socket.io-client";
 import { Navigate } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
-import MasterBoard from "../../components/MasterBoard/index.js";
-import { GameContext } from "../../context/GameContext/index.js";
+import MasterBoard from "../../components/MasterBoard";
+import { GameContext } from "../../context/GameContext";
 import * as _ from "lodash";
 import Cookies from "js-cookie";
-import ShareButton from "../../components/ShareButton/index.js";
-import PlayerTab from "../../components/PlayerTab/index.js";
+import ShareButton from "../../components/ShareButton";
+import PlayerTab from "../../components/PlayerTab";
+import CloseButton from "../../components/CloseButton";
 
 // Define a type alias for the socket
 type MySocket = Socket;
@@ -56,7 +57,7 @@ function Game() {
   }
 
   return (
-    <main className="flex flex-col items-center min-h-screen gap-5 py-3 sm:py-6 bg-app-bg text-app-text">
+    <main className="relative flex flex-col items-center min-h-screen gap-5 py-3 sm:py-6 bg-app-bg text-app-text">
       <div className="flex flex-col items-center w-full gap-1 px-2 sm:px-0 sm:w-1/2 md:w-2/3 ">
         <div className="w-full py-2 text-center rounded shadow-2xl bg-app-board-background">
           <span className="block mb-0.5">Room</span>
@@ -113,6 +114,8 @@ function Game() {
         sendMoveInfo={sendMoveInfo}
         allowedBoardToPlay={_.get(roomData, "nextMoveBoard", null)}
       />
+
+      <CloseButton />
     </main>
   );
 }

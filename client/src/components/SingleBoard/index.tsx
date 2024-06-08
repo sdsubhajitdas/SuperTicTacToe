@@ -1,4 +1,4 @@
-import BoardButton from "../BoardButton/index.js";
+import BoardButton from "../BoardButton";
 
 type SingleBoardProps = {
   masterBoardIndex: number;
