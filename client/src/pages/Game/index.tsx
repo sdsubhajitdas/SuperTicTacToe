@@ -6,6 +6,7 @@ import { GameContext } from "../../context/GameContext/index.js";
 import * as _ from "lodash";
 import Cookies from "js-cookie";
 import ShareButton from "../../components/ShareButton/index.js";
+import PlayerTab from "../../components/PlayerTab/index.js";
 
 // Define a type alias for the socket
 type MySocket = Socket;
@@ -65,18 +66,22 @@ function Game() {
           </div>
         </div>
         <div className="grid w-full grid-cols-2 grid-rows-1 gap-4 text-xl font-medium text-center sm:text-3xl">
-          <p className="py-1 rounded shadow-2xl bg-app-board-background">
-            Player X
-            <span className="block pt-2 pb-1 mx-2 text-lg rounded sm:text-2xl bg-app-bg">
-              {_.get(roomData, "players[0].name", " ")}
-            </span>
-          </p>
-          <p className="py-2 rounded shadow-2xl bg-app-board-background">
-            Player O
-            <span className="block pt-2 pb-1 mx-2 text-lg rounded sm:text-2xl bg-app-bg">
-              {_.get(roomData, "players[1].name", " ")}
-            </span>
-          </p>
+          <PlayerTab
+            title="Player X"
+            value={_.get(roomData, "players[0].name")}
+            active={
+              _.get(roomData, "players[0].sessionId") ===
+              _.get(roomData, "nextMovePlayer")
+            }
+          />
+          <PlayerTab
+            title="Player O"
+            value={_.get(roomData, "players[1].name")}
+            active={
+              _.get(roomData, "players[1].sessionId") ===
+              _.get(roomData, "nextMovePlayer")
+            }
+          />
         </div>
       </div>
 
