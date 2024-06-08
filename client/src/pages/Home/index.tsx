@@ -44,7 +44,6 @@ function Home() {
       });
       setJoinRoomIsClosed(false);
     }
-    console.log("Entered");
   }, [dispatch, joinRoomId]);
 
   return (

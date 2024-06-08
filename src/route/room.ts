@@ -20,11 +20,27 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
     roomExists = await redisClient.exists(`room:${roomId}`);
   }
 
+  // const testBoard = Array(9).fill(Array(9).fill(null));
+  // testBoard[4] = [
+  //   "X", null, null,
+  //   null, null, null,
+  //   null, null, "X"
+  // ];
+
+  // const testMasterBoard = [
+  //   "X", null, null,
+  //   null, null, null,
+  //   null, null, "X"
+  // ];
+
   await Promise.all([
     redisClient.json_set(`room:${roomId}`, "$", {
       roomId: roomId,
       status: "allocated",
+      winner: null,
       players: [],
+      // boards: testBoard,
+      // masterBoard: testMasterBoard,
       boards: Array(9).fill(Array(9).fill(null)),
       masterBoard: Array(9).fill(null),
       nextMovePlayer: null,

@@ -15,6 +15,7 @@ type MySocket = Socket;
 function Game() {
   const { roomId } = useContext(GameContext);
   const [roomData, setRoomData] = useState({});
+  const [roomStatus, setRoomStatus] = useState("");
   const [socket, setSocket] = useState<MySocket | null>(null);
   const [allowedToMakeMove, setAllowedToMakeMove] = useState(false);
   const sessionId = Cookies.get("sessionId");
@@ -27,11 +28,13 @@ function Game() {
 
       newSocket.on("join-room-completed", (response) => {
         setRoomData(response);
+        setRoomStatus(_.get(response, "status", "waiting"));
         setAllowedToMakeMove(_.get(response, "nextMovePlayer") === sessionId);
       });
 
       newSocket.on("player-made-move-completed", (response) => {
         setAllowedToMakeMove(_.get(response, "nextMovePlayer") === sessionId);
+        setRoomStatus(_.get(response, "status", "waiting"));
         setRoomData(response);
       });
 
@@ -50,6 +53,19 @@ function Game() {
         roomId,
       });
     }
+  };
+
+  const displayWinnerText = () => {
+    const winningPlayerIndex = _.findIndex(
+      _.get(roomData, "players", []),
+      (pl: { sessionId: string }) => pl.sessionId === _.get(roomData, "winner")
+    );
+
+    return `Player ${winningPlayerIndex === 0 ? "X" : "O"} ${_.get(
+      roomData,
+      `players[${winningPlayerIndex}].name`,
+      ""
+    )} has won`;
   };
 
   if (!roomId) {
@@ -72,7 +88,7 @@ function Game() {
             value={_.get(roomData, "players[0].name")}
             active={
               _.get(roomData, "players[0].sessionId") ===
-              _.get(roomData, "nextMovePlayer")
+                _.get(roomData, "nextMovePlayer") || roomStatus === "finished"
             }
           />
           <PlayerTab
@@ -80,17 +96,21 @@ function Game() {
             value={_.get(roomData, "players[1].name")}
             active={
               _.get(roomData, "players[1].sessionId") ===
-              _.get(roomData, "nextMovePlayer")
+                _.get(roomData, "nextMovePlayer") || roomStatus === "finished"
             }
           />
         </div>
       </div>
 
-      <p className="px-2 text-lg font-medium sm:text-2xl sm:px-0">
-        {_.get(roomData, "status", "waiting") == "waiting" &&
-          "Waiting for other players to join ..."}
-        {_.get(roomData, "status", "waiting") != "waiting" &&
-          `${_.get(
+      {roomStatus === "waiting" && (
+        <p className="px-2 text-lg font-medium sm:text-2xl sm:px-0">
+          "Waiting for other players to join ..."
+        </p>
+      )}
+
+      {roomStatus === "ready" && (
+        <p className="px-2 text-lg font-medium sm:text-2xl sm:px-0">
+          {`${_.get(
             _.find(
               _.get(roomData, "players", []),
               (player) =>
@@ -98,7 +118,14 @@ function Game() {
             ),
             "name"
           )}'s turn`}
-      </p>
+        </p>
+      )}
+
+      {roomStatus === "finished" && (
+        <p className="px-2 text-lg font-medium sm:text-2xl sm:px-0">
+          {displayWinnerText()}
+        </p>
+      )}
 
       <MasterBoard
         masterBoardData={_.get(roomData, "masterBoard", Array(9).fill(null))}
@@ -109,7 +136,8 @@ function Game() {
         )}
         disable={
           _.get(roomData, "status", "waiting") === "waiting" ||
-          !allowedToMakeMove
+          !allowedToMakeMove ||
+          roomStatus === "finished"
         }
         sendMoveInfo={sendMoveInfo}
         allowedBoardToPlay={_.get(roomData, "nextMoveBoard", null)}
