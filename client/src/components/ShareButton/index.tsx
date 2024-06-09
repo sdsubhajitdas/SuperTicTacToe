@@ -2,14 +2,20 @@ import { useContext } from "react";
 import shareLogo from "../../assets/share.svg";
 import { GameContext } from "../../context/GameContext";
 
-function ShareButton() {
+type ShareButtonProps = {
+  showToast: (message: string, type: "success" | "error") => void;
+};
+
+function ShareButton({ showToast }: ShareButtonProps) {
   const { roomId } = useContext(GameContext);
 
   async function copyToClipBoard(text: string) {
     try {
       await navigator.clipboard.writeText(text);
+      showToast("Copied to clipboard", "success");
     } catch (error) {
       console.error(error);
+      showToast(error as string, "error");
     }
   }
 

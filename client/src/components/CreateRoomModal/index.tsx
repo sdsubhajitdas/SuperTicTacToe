@@ -4,6 +4,7 @@ import { useContext, useEffect } from "react";
 import Spinner from "../Spinner";
 import { GameContext } from "../../context/GameContext";
 import { Navigate } from "react-router-dom";
+import * as _ from "lodash";
 
 type CreateRoomModalProps = {
   isClosed: boolean;
@@ -15,6 +16,7 @@ type CreateRoomModalProps = {
   roomId: string;
   setRoomId: (arg0: string) => void;
   roomIdError: string;
+  showToast: (message: string, type: "success" | "error") => void;
 };
 
 export default function CreateRoomModal({
@@ -27,6 +29,7 @@ export default function CreateRoomModal({
   roomId,
   setRoomId,
   roomIdError,
+  showToast,
 }: CreateRoomModalProps) {
   const { setRoomId: setGameContextRoomId } = useContext(GameContext);
 
@@ -38,6 +41,12 @@ export default function CreateRoomModal({
     },
     onSuccess: (data) => {
       setGameContextRoomId(data.data.roomId);
+    },
+    onError: (err) => {
+      showToast(
+        _.get(err, "response.data.message", "Something went wrong"),
+        "error"
+      );
     },
   });
 

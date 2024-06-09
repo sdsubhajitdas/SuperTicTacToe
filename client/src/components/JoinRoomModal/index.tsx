@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import Spinner from "../Spinner";
 import axios from "axios";
 import { Navigate } from "react-router-dom";
+import * as _ from "lodash";
 
 type JoinRoomModalProps = {
   isClosed: boolean;
@@ -16,6 +17,7 @@ type JoinRoomModalProps = {
   setRoomId: (arg0: string) => void;
   roomIdError: string;
   setRoomIdError: (arg0: string) => void;
+  showToast: (message: string, type: "success" | "error") => void;
 };
 
 export default function JoinRoomModal({
@@ -29,6 +31,7 @@ export default function JoinRoomModal({
   setRoomId,
   roomIdError,
   setRoomIdError,
+  showToast,
 }: JoinRoomModalProps) {
   const { setRoomId: setGameContextRoomId } = useContext(GameContext);
 
@@ -40,6 +43,12 @@ export default function JoinRoomModal({
     },
     onSuccess: (data) => {
       setGameContextRoomId(data.data.roomId);
+    },
+    onError: (err) => {
+      showToast(
+        _.get(err, "response.data.message", "Something went wrong"),
+        "error"
+      );
     },
   });
 

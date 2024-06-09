@@ -1,6 +1,6 @@
 import io, { Socket } from "socket.io-client";
 import { Navigate } from "react-router-dom";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import MasterBoard from "../../components/MasterBoard";
 import { GameContext } from "../../context/GameContext";
 import * as _ from "lodash";
@@ -8,17 +8,27 @@ import Cookies from "js-cookie";
 import ShareButton from "../../components/ShareButton";
 import PlayerTab from "../../components/PlayerTab";
 import CloseButton from "../../components/CloseButton";
+import ToastContainer, {
+  ToastContainerRef,
+} from "../../components/ToastContainer";
 
 // Define a type alias for the socket
 type MySocket = Socket;
 
 function Game() {
+  const toastRef = useRef<ToastContainerRef>(null);
   const { roomId } = useContext(GameContext);
   const [roomData, setRoomData] = useState({});
   const [roomStatus, setRoomStatus] = useState("");
   const [socket, setSocket] = useState<MySocket | null>(null);
   const [allowedToMakeMove, setAllowedToMakeMove] = useState(false);
   const sessionId = Cookies.get("sessionId");
+
+  const showToast = (message: string, type: "success" | "error") => {
+    if (toastRef.current) {
+      toastRef.current.addToast(message, type);
+    }
+  };
 
   useEffect(() => {
     if (roomId) {
@@ -78,12 +88,13 @@ function Game() {
 
   return (
     <main className="relative flex flex-col items-center min-h-screen gap-5 py-3 sm:py-6 bg-app-bg text-app-text">
+      <ToastContainer ref={toastRef} />
       <div className="flex flex-col items-center w-full gap-1 px-2 sm:px-0 sm:w-1/2 md:w-2/3 ">
         <div className="w-full py-2 text-center rounded shadow-2xl bg-app-board-background">
           <span className="block mb-0.5">Room</span>
           <div className="flex items-center justify-between px-4 py-1 mx-2 text-2xl rounded bg-app-bg">
             <span className="flex-grow pl-10 text-center">{roomId}</span>
-            <ShareButton />
+            <ShareButton showToast={showToast} />
           </div>
         </div>
         <div className="grid w-full grid-cols-2 grid-rows-1 gap-4 text-xl font-medium text-center sm:text-3xl">
@@ -108,7 +119,7 @@ function Game() {
 
       {roomStatus === "waiting" && (
         <p className="px-2 text-lg font-medium sm:text-2xl sm:px-0">
-          "Waiting for other players to join ..."
+          Waiting for other players to join ...
         </p>
       )}
 

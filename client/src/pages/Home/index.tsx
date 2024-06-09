@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import logo from "../../assets/logo.png";
 import Button from "../../components/Button";
 import CreateRoomModal from "../../components/CreateRoomModal";
@@ -7,8 +7,12 @@ import useRoomManagement, {
   roomManagementActions,
 } from "../../hooks/useRoomManagement";
 import { useSearchParams } from "react-router-dom";
+import ToastContainer, {
+  ToastContainerRef,
+} from "../../components/ToastContainer";
 
 function Home() {
+  const toastRef = useRef<ToastContainerRef>(null);
   const [searchParams] = useSearchParams();
   const joinRoomId = searchParams.get("join");
   const [createRoomIsClosed, setCreateRoomIsClosed] = useState(true);
@@ -36,6 +40,12 @@ function Home() {
     setJoinRoomIsClosed(true);
   }
 
+  const showToast = (message: string, type: "success" | "error") => {
+    if (toastRef.current) {
+      toastRef.current.addToast(message, type);
+    }
+  };
+
   useEffect(() => {
     if (joinRoomId) {
       dispatch({
@@ -48,6 +58,7 @@ function Home() {
 
   return (
     <main className="flex flex-col items-center min-h-screen pt-12 sm:pt-24 bg-app-bg text-app-text">
+      <ToastContainer ref={toastRef} />
       <span className="font-semibold text-center">
         <h2 className="text-xl sm:text-2xl">Welcome to</h2>
         <h1 className="text-4xl sm:text-6xl">Super Tic Tac Toe</h1>
@@ -89,6 +100,7 @@ function Home() {
           })
         }
         roomIdError={state.room.error}
+        showToast={showToast}
       />
       <JoinRoomModal
         isClosed={joinRoomIsClosed}
@@ -121,6 +133,7 @@ function Home() {
             payload: error,
           })
         }
+        showToast={showToast}
       />
     </main>
   );
