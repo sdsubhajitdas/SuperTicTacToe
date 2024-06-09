@@ -56,6 +56,10 @@ function Game() {
   };
 
   const displayWinnerText = () => {
+    if (_.get(roomData, "winner") === "?") {
+      return "It's a tie";
+    }
+
     const winningPlayerIndex = _.findIndex(
       _.get(roomData, "players", []),
       (pl: { sessionId: string }) => pl.sessionId === _.get(roomData, "winner")
