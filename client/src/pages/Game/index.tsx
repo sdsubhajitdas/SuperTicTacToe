@@ -83,7 +83,7 @@ function Game() {
           <span className="block mb-0.5">Room</span>
           <div className="flex items-center justify-between px-4 py-1 mx-2 text-2xl rounded bg-app-bg">
             <span className="flex-grow pl-10 text-center">{roomId}</span>
-            {_.get(roomData, "players", []).length < 2 && <ShareButton />}
+            <ShareButton />
           </div>
         </div>
         <div className="grid w-full grid-cols-2 grid-rows-1 gap-4 text-xl font-medium text-center sm:text-3xl">
@@ -144,6 +144,7 @@ function Game() {
           roomStatus === "finished"
         }
         sendMoveInfo={sendMoveInfo}
+        lastMove={_.get(roomData, "lastMove", null)}
         allowedBoardToPlay={_.get(roomData, "nextMoveBoard", null)}
       />
 

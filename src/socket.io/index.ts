@@ -92,7 +92,6 @@ export default function setupSocketIoServer(ioServer: Server) {
         redisClient.json_set(`room:${roomId}`, "$.masterBoard", masterBoard)
       );
 
-
       redisPromises.push(
         redisClient.json_set(
           `room:${roomId}`,
@@ -109,6 +108,13 @@ export default function setupSocketIoServer(ioServer: Server) {
           "$.nextMoveBoard",
           decideNextMoveBoard(childBoardIndex, masterBoard)
         )
+      );
+
+      redisPromises.push(
+        redisClient.json_set(`room:${roomId}`, "$.lastMove", {
+          masterBoardIndex,
+          childBoardIndex,
+        })
       );
 
       await Promise.all([redisPromises]);

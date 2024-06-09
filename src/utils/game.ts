@@ -1,6 +1,6 @@
 import * as _ from "lodash";
 
-export function checkTicTacToeBoard(board: ("X" | "O" | null)[]) {
+export function checkTicTacToeBoard(board: ("X" | "O" | "?" | null)[]) {
   const winningCombinations = [
     [0, 1, 2], // Top row
     [3, 4, 5], // Middle row
@@ -15,7 +15,7 @@ export function checkTicTacToeBoard(board: ("X" | "O" | null)[]) {
   // Check for a winner
   for (const combination of winningCombinations) {
     const [a, b, c] = combination;
-    if (board[a] !== null && board[a] === board[b] && board[a] === board[c]) {
+    if (board[a] !== null && board[a] !== "?" && board[a] === board[b] && board[a] === board[c]) {
       return board[a]; // Return the winner ('X' or 'O')
     }
   }

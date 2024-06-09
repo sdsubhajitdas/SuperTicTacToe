@@ -6,6 +6,7 @@ type SingleBoardProps = {
   masterData: "X" | "O" | null;
   disable: boolean;
   sendMoveInfo: (masterBoardIndex: number, childBoardIndex: number) => void;
+  lastMove: number | null;
 };
 
 function SingleBoard({
@@ -14,6 +15,7 @@ function SingleBoard({
   masterData,
   disable = false,
   sendMoveInfo,
+  lastMove,
 }: SingleBoardProps) {
   const row = Math.floor(masterBoardIndex / 3);
   const col = masterBoardIndex % 3;
@@ -63,6 +65,7 @@ function SingleBoard({
           disable={boardData[i] ? true : false || disable}
           value={boardData[i]}
           sendMoveInfo={sendMoveInfo}
+          lastPlayed={lastMove === i}
         />
       ))}
     </div>

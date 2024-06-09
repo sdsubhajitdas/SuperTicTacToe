@@ -45,6 +45,10 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
       masterBoard: Array(9).fill(null),
       nextMovePlayer: null,
       nextMoveBoard: null,
+      lastMove: {
+        masterBoardIndex: null,
+        childBoardIndex: null
+      }
     }),
     // On room creation we set the expiration to 10 mins.
     // When someone joins the room we increase the expiration to env variable
