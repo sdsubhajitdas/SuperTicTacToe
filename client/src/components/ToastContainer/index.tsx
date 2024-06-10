@@ -12,7 +12,7 @@ export interface ToastContainerRef {
   addToast: (message: string, type: "success" | "error") => void;
 }
 
-const ToastContainer = forwardRef<ToastContainerRef>((props, ref) => {
+const ToastContainer = forwardRef<ToastContainerRef>((_props, ref) => {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   const addToast = useCallback((message: string, type: "success" | "error") => {
