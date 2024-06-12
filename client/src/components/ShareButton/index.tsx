@@ -9,9 +9,10 @@ type ShareButtonProps = {
 function ShareButton({ showToast }: ShareButtonProps) {
   const { roomId } = useContext(GameContext);
 
-  async function copyToClipBoard(text: string) {
+  async function copyToClipBoard(link: string) {
     try {
-      await navigator.clipboard.writeText(text);
+      const message = `Join me in Super Tic Tac Toe Arena !\nClick here to play: ${link}`;
+      await navigator.clipboard.writeText(message);
       showToast("Copied to clipboard", "success");
     } catch (error) {
       console.error(error);
