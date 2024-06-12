@@ -10,6 +10,7 @@ import { useSearchParams } from "react-router-dom";
 import ToastContainer, {
   ToastContainerRef,
 } from "../../components/ToastContainer";
+import HelpButton from "../../components/HelpButton";
 
 function Home() {
   const toastRef = useRef<ToastContainerRef>(null);
@@ -57,7 +58,7 @@ function Home() {
   }, [dispatch, joinRoomId]);
 
   return (
-    <main className="flex flex-col items-center min-h-screen pt-12 sm:pt-24 bg-app-bg text-app-text">
+    <main className="relative flex flex-col items-center min-h-screen pt-5 md:pt-12 sm:pt-24 bg-app-bg text-app-text">
       <ToastContainer ref={toastRef} />
       <span className="font-semibold text-center">
         <h2 className="text-xl sm:text-2xl">Welcome to</h2>
@@ -135,6 +136,7 @@ function Home() {
         }
         showToast={showToast}
       />
+      <HelpButton />
     </main>
   );
 }
